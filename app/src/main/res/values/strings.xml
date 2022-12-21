@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CustomTabSDK</string>
+
+    <string name="incoming_call">Incoming Call</string>
+    <string name="connecting">Connecting…</string>
+    <string name="decline">Decline</string>
+    <string name="answer">Answer</string>
+    <string name="call">Call</string>
+
+</resources>
