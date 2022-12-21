@@ -10,8 +10,8 @@ Degpeg video call SDKCustom Tabs is a browser feature, introduced by Chrome, tha
 
 # Preview
 <p align="center">
-<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/master/app/Screenshot_1.png" alt="Screenshot_1" width="200" height="400"> 
-<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/master/app/Screenshot_2.png" alt="Screenshot_2" width="200" height="400">
+<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/main/app/Screenshot_1.png" alt="Screenshot_1" width="200" height="400"> 
+<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/main/app/Screenshot_2.png" alt="Screenshot_2" width="200" height="400">
 </p>
 
 # SDK initialization and setup
