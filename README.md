@@ -1,7 +1,7 @@
 <h1 align="center">CustomTab</h1>
 <p align="center">
-  <img src="https://jitpack.io/v/degpeg-media/degpeg-b2c-sdk-android/month.svg"/>
-  <img src="https://jitpack.io/v/degpeg-media/degpeg-b2c-sdk-android.svg"/>
+  <img src="https://jitpack.io/v/degpeg-media/degpeg-video-call-sdk/month.svg"/>
+  <img src="https://jitpack.io/v/degpeg-media/degpeg-video-call-sdk.svg"/>
 </p>
 
 CustomTab library helps to use Custom Tabs on top of the AndroidX browser support library.
@@ -10,7 +10,9 @@ Custom Tabs is a browser feature, introduced by Chrome, that is now supported by
 
 # Preview
 <p float="left">
-<img src="https://github.com/degpeg-media/degpeg-b2c-sdk-android/blob/master/app/Dashboard.png" alt="dashboard" width="200" height="400"> 
+<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/master/app/Screenshot_1.png" alt="dashboard" width="200" height="400"> 
+<img src="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/master/app/Screenshot_2.png" alt="dashboard" width="200" height="400">
+</p>
 
 # SDK initialization and setup
 
@@ -38,14 +40,14 @@ dependencies {
 
 * Launch customTab
 ```kotlin
-CustomTabHelper.with(this)
+VideoCallSDKHelper.with(this)
     .launchUrl(url)
 ```
 
 # Customization
 Update the browser theme using the SDK methods
 ```kotlin
-CustomTabHelper.with(this)
+VideoCallSDKHelper.with(this)
     .setToolbarColor(getColor("#000000"))
     .setSecondaryToolbarColor(getColor("#FFFFFF"))
     .setNavigationBarColor(Color.BLACK)
