@@ -2,6 +2,7 @@ package com.videoCallSDK
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.text.TextUtils
@@ -10,15 +11,12 @@ import android.util.Log
 internal object VideoCallSDKUtils {
 
     private const val TAG = "CustomTabsHelper"
-    private const val STABLE_PACKAGE = "com.android.chrome"
-    private const val BETA_PACKAGE = "com.chrome.beta"
-    private const val DEV_PACKAGE = "com.chrome.dev"
-    private const val LOCAL_PACKAGE = "com.google.android.apps.chrome"
+    internal const val CHROME_PACKAGE = "com.android.chrome"
+    internal const val FIREFOX_PACKAGE = "org.mozilla.firefox"
     private const val EXTRA_CUSTOM_TABS_KEEP_ALIVE = "android.support.customtabs.extra.KEEP_ALIVE"
-    private const val ACTION_CUSTOM_TABS_CONNECTION = "android.support.customtabs.action.CustomTabsService"
+    private const val ACTION_CUSTOM_TABS_CONNECTION =
+        "android.support.customtabs.action.CustomTabsService"
 
-    private var sPackageNameToUse: String? = null
-    
     /**
      * Goes through all apps that handle VIEW intents and have a warmup service. Picks
      * the one chosen by the user if there is one, otherwise makes a best effort to return a
@@ -30,11 +28,16 @@ internal object VideoCallSDKUtils {
      * @return The package name recommended to use for connecting to custom tabs related components.
      */
     @Suppress("DEPRECATION")
-    fun getPackageNameToUse(context: Context): String? {
-        if (sPackageNameToUse != null) return sPackageNameToUse
+    fun getCustomTabsPackages(context: Context): String? {
+        var sPackageNameToUse: String? = null
         val pm = context.packageManager
+
+        val activityIntent = Intent()
+            .setAction(Intent.ACTION_VIEW)
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .setData(Uri.fromParts("http", "", null))
+
         // Get default VIEW intent handler.
-        val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
         val defaultViewHandlerInfo = pm.resolveActivity(activityIntent, 0)
         var defaultViewHandlerPackageName: String? = null
         if (defaultViewHandlerInfo != null) {
@@ -56,18 +59,24 @@ internal object VideoCallSDKUtils {
 
         // Now packagesSupportingCustomTabs contains all apps that can handle both VIEW intents
         // and service calls. Prefer the default browser if it supports Custom Tabs.
-        if (packagesSupportingCustomTabs.isEmpty()) {
-            sPackageNameToUse = null
-        } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName)
-            && !hasSpecializedHandlerIntents(context, activityIntent)
-            && packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)
-        ) {
-            sPackageNameToUse =
+        sPackageNameToUse =
+            if (packagesSupportingCustomTabs.isEmpty()) {
+                null
+            } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName)
+                && !hasSpecializedHandlerIntents(context, activityIntent)
+                && packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)
+            ) {
                 defaultViewHandlerPackageName
-        } else {
-            // Otherwise, pick the next favorite Custom Tabs provider.
-            sPackageNameToUse =
+            } else {
+                // Otherwise, pick the next favorite Custom Tabs provider.
                 packagesSupportingCustomTabs[0]
+            }
+
+        if (sPackageNameToUse == null) {
+            when {
+                isChromeInstalled(context) -> sPackageNameToUse = CHROME_PACKAGE
+                isFireFoxInstalled(context) -> sPackageNameToUse = FIREFOX_PACKAGE
+            }
         }
         return sPackageNameToUse
     }
@@ -104,9 +113,26 @@ internal object VideoCallSDKUtils {
 
 
     /**
-     * @return All possible chrome package names that provide custom tabs feature.
-     */
-    fun getPackages(): Array<String> {
-        return arrayOf("", STABLE_PACKAGE, BETA_PACKAGE, DEV_PACKAGE, LOCAL_PACKAGE)
+     * Check the chrome is installed or not
+     * */
+    private fun isChromeInstalled(context: Context): Boolean {
+        val pInfo: PackageInfo? = try {
+            context.packageManager.getPackageInfo(CHROME_PACKAGE, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+        return pInfo != null
+    }
+
+    /**
+     * Check the firefox is installed or not
+     * */
+    private fun isFireFoxInstalled(context: Context): Boolean {
+        val pInfo: PackageInfo? = try {
+            context.packageManager.getPackageInfo(FIREFOX_PACKAGE, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+        return pInfo != null
     }
 }

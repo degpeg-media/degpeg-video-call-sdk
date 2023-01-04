@@ -1,12 +1,15 @@
 package com.videoCallSDK
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.videoCallSDK.VideoCallSDKExtension.getUpdatedUrl
+import com.videoCallSDK.VideoCallSDKUtils.CHROME_PACKAGE
 
 class VideoCallSDKHelper(private val context: Context) {
 
@@ -50,24 +53,23 @@ class VideoCallSDKHelper(private val context: Context) {
      * */
     fun launchUrl(url: String) {
         if (url.isEmpty()) return
-        val builder = CustomTabsIntent.Builder()
-            .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-            .setDefaultColorSchemeParams(getColorScheme())
-            .setShowTitle(true)
+        val builder = CustomTabsIntent.Builder().setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+            .setDefaultColorSchemeParams(getColorScheme()).setShowTitle(true)
 
-        openCustomTab(builder.build(), Uri.parse(url.getUpdatedUrl()), object : VideoCallSDKFallback {
-            override fun openUri(context: Context?, uri: Uri?) {
-                Toast.makeText(context, "Unable to launch customTab", Toast.LENGTH_SHORT).show()
-            }
-        })
+        openCustomTab(builder.build(),
+            Uri.parse(url.getUpdatedUrl()),
+            object : VideoCallSDKFallback {
+                override fun openUri(context: Context?, uri: Uri?) {
+                    startIntentForChrome()
+//                    Toast.makeText(context, "Unable to launch customTab", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun openCustomTab(
-        customTabsIntent: CustomTabsIntent,
-        uri: Uri,
-        fallback: VideoCallSDKFallback?
+        customTabsIntent: CustomTabsIntent, uri: Uri, fallback: VideoCallSDKFallback?
     ) {
-        val packageName = VideoCallSDKUtils.getPackageNameToUse(context)
+        val packageName = VideoCallSDKUtils.getCustomTabsPackages(context)
         //If we cant find a package name, it means theres no browser that supports
         //Chrome Custom Tabs installed. So, we fallback to the webview
         if (packageName == null) {
@@ -78,20 +80,39 @@ class VideoCallSDKHelper(private val context: Context) {
         }
     }
 
+    private fun startIntentForChrome() {
+        MaterialAlertDialogBuilder(context)
+            .setMessage("CustomTab service is unsupported, Try installing chrome browser and make it as default app from setting.")
+            .setPositiveButton("Install Chrome") { _, _ ->
+                try {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$CHROME_PACKAGE"))
+                    )
+                } catch (a: ActivityNotFoundException) {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$CHROME_PACKAGE")
+                        )
+                    )
+                }
+            }.setNegativeButton("Cancel") { _, _ -> }.show()
+    }
+
     /**
      * CustomTab Color scheme
      * */
     private fun getColorScheme(): CustomTabColorSchemeParams {
         val themeBuilder = CustomTabColorSchemeParams.Builder()
-        if (mToolbarColor != null)
-            themeBuilder.setToolbarColor(mToolbarColor!!)
-        if (mSecondaryToolbarColor != null)
-            themeBuilder.setSecondaryToolbarColor(mSecondaryToolbarColor!!)
+        if (mToolbarColor != null) themeBuilder.setToolbarColor(mToolbarColor!!)
+        if (mSecondaryToolbarColor != null) themeBuilder.setSecondaryToolbarColor(
+            mSecondaryToolbarColor!!
+        )
 
-        if (mNavigationBarColor != null)
-            themeBuilder.setNavigationBarColor(mNavigationBarColor!!)
-        if (mNavigationBarDividerColor != null)
-            themeBuilder.setNavigationBarDividerColor(mNavigationBarDividerColor!!)
+        if (mNavigationBarColor != null) themeBuilder.setNavigationBarColor(mNavigationBarColor!!)
+        if (mNavigationBarDividerColor != null) themeBuilder.setNavigationBarDividerColor(
+            mNavigationBarDividerColor!!
+        )
 
         return themeBuilder.build()
     }

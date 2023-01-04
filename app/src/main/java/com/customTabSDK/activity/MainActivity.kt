@@ -20,12 +20,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.edtEditText.setText("google.com")
+        binding.edtEditText.setText("https://slf.degpeg.com/aditya/camera/")
         binding.btnCustomTab.setOnClickListener(this)
         binding.btnClose.setOnClickListener(this)
         binding.btnIncomingCall.setOnClickListener(this)
 
         onNewIntent(intent)
+
+
+//        VideoCallSDKHelper.with(this)
+//            .setToolbarColor(getColor("#000000"))
+//            .setSecondaryToolbarColor(getColor("#FFFFFF"))
+//            .setNavigationBarColor(Color.BLACK)
+//            .setNavigationBarDividerColor(Color.GREEN)
+//            .launchUrl("https://slf.degpeg.com/aditya/camera/")
     }
 
     override fun onNewIntent(intent: Intent?) {
