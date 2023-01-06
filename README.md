@@ -54,3 +54,7 @@ VideoCallSDKHelper.with(this)
     .setNavigationBarDividerColor(Color.GREEN)
     .launchUrl(url)
 ```
+
+# For Call notification integration please refer the go to document
+<a href="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/main/SAMPLE_README.md">Sample Document</a>
+
