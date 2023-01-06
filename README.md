@@ -1,4 +1,4 @@
-<h1 align="center">Call Notification Integration</h1>
+<h1 align="center">Degpeg video call SDK</h1>
 <p align="center">
   <img src="https://jitpack.io/v/degpeg-media/degpeg-video-call-sdk/month.svg"/>
   <img src="https://jitpack.io/v/degpeg-media/degpeg-video-call-sdk.svg"/>
