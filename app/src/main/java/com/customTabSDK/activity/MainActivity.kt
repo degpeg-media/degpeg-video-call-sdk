@@ -5,11 +5,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.customTabSDK.databinding.ActivityMainBinding
-import com.videoCallSDK.VideoCallSDKHelper
 import com.customTabSDK.notifier.CallNotificationHelper
+import com.videoCallSDK.VideoCallSDKHelper
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var binding: ActivityMainBinding
@@ -20,7 +23,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.edtEditText.setText("https://slf.degpeg.com/aditya/camera/")
+//        binding.edtEditText.setText("https://slf.degpeg.com/aditya/camera/")
+        binding.edtEditText.setText("https://github.com/degpeg-media/degpeg-video-call-sdk")
         binding.btnCustomTab.setOnClickListener(this)
         binding.btnClose.setOnClickListener(this)
         binding.btnIncomingCall.setOnClickListener(this)
@@ -39,16 +43,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         val isCall = intent?.getBooleanExtra("isCall", false) ?: false
-        if (isCall){
+        if (isCall) {
             VideoCallSDKHelper.with(this)
                 .setToolbarColor(getColor("#000000"))
                 .setSecondaryToolbarColor(getColor("#FFFFFF"))
                 .setNavigationBarColor(Color.BLACK)
                 .setNavigationBarDividerColor(Color.GREEN)
+                .startForResult(startForResult)
                 .launchUrl("https://developer.android.com/")
         }
     }
 
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // Toast.makeText(this, "Finished with result", Toast.LENGTH_SHORT).show()
+            finish()
+        }
 
     override fun onClick(v: View?) {
         when (v) {
@@ -82,4 +92,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Color.LTGRAY
         }
     }
+
+
 }

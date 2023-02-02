@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.ColorInt
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -24,6 +25,8 @@ class VideoCallSDKHelper(private val context: Context) {
 
     @ColorInt
     private var mNavigationBarDividerColor: Int? = null
+
+    private var resultLauncher: ActivityResultLauncher<Intent>? = null
 
     /**
      * Theme customization
@@ -48,15 +51,23 @@ class VideoCallSDKHelper(private val context: Context) {
         return this
     }
 
+    fun startForResult(resultLauncher: ActivityResultLauncher<Intent>): VideoCallSDKHelper {
+        this.resultLauncher = resultLauncher
+        return this
+    }
+
     /**
      * Launch url with customTab
      * */
     fun launchUrl(url: String) {
         if (url.isEmpty()) return
-        val builder = CustomTabsIntent.Builder().setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-            .setDefaultColorSchemeParams(getColorScheme()).setShowTitle(true)
+        val builder = CustomTabsIntent.Builder()
+            .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+            .setDefaultColorSchemeParams(getColorScheme())
+            .setShowTitle(true)
 
-        openCustomTab(builder.build(),
+        openCustomTab(
+            builder.build(),
             Uri.parse(url.getUpdatedUrl()),
             object : VideoCallSDKFallback {
                 override fun openUri(context: Context?, uri: Uri?) {
@@ -76,13 +87,17 @@ class VideoCallSDKHelper(private val context: Context) {
             fallback?.openUri(context, uri)
         } else {
             customTabsIntent.intent.setPackage(packageName)
-            customTabsIntent.launchUrl(context, uri)
+            if (resultLauncher != null) {
+                customTabsIntent.intent.data = uri
+                resultLauncher?.launch(customTabsIntent.intent)
+            } else {
+                customTabsIntent.launchUrl(context, uri)
+            }
         }
     }
 
     private fun startIntentForChrome() {
-        MaterialAlertDialogBuilder(context)
-            .setMessage("CustomTab service is unsupported, Try installing chrome browser and make it as default app from setting.")
+        MaterialAlertDialogBuilder(context).setMessage("CustomTab service is unsupported, Try installing chrome browser and make it as default app from setting.")
             .setPositiveButton("Install Chrome") { _, _ ->
                 try {
                     context.startActivity(

@@ -21,7 +21,7 @@ Degpeg video call SDKCustom Tabs is a browser feature, introduced by Chrome, tha
  ```groovy
 allprojects {
     repositories {
-         maven {
+        maven {
             url "https://jitpack.io"
         }
     }
@@ -45,7 +45,7 @@ VideoCallSDKHelper.with(this)
 ```
 
 # Customization
-Update the browser theme using the SDK methods
+* Update the browser theme using the SDK methods
 ```kotlin
 VideoCallSDKHelper.with(this)
     .setToolbarColor(getColor("#000000"))
@@ -55,6 +55,18 @@ VideoCallSDKHelper.with(this)
     .launchUrl(url)
 ```
 
-# For Call notification integration please refer the go to document
-<a href="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/main/SAMPLE_README.md">Sample Document</a>
+* Get customtab callback using resultLauncher. Create the ActivityResultLauncher object and use it with sdk method
+```kotlin 
+private val startForResult =
+      registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+          // Toast.makeText(this, "Finished with result", Toast.LENGTH_SHORT).show()
+          finish()
+      }
+        
+VideoCallSDKHelper.with(this)
+      .startForResult(startForResult)
+      .launchUrl("https://developer.android.com/")
+```
 
+# For Call notification integration please refer the sample document.
+<a href="https://github.com/degpeg-media/degpeg-video-call-sdk/blob/main/SAMPLE_README.md">Sample Document</a>
